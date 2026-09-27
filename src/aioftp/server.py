@@ -1145,12 +1145,14 @@ class Server:
             connection.response("502", "'AUTH' not implemented")
         elif connection.future.ssl_enabled.done():
             connection.response("503", "already using TLS")
+        elif connection.future.logged.done() or connection.future.passive_server.done():
+            connection.response("503", "'AUTH' command disabled after login")
         elif rest.upper() not in ("TLS", "SSL"):
             connection.response("504", f"AUTH {rest!r} not implemented")
         else:
             connection.response("234", f"AUTH {rest!r} successful")
-            await connection.command_connection.start_tls(self.ssl)
             connection.ssl_enabled = True
+            await connection.command_connection.start_tls(self.ssl)
         return True
 
     async def user(self, connection: Connection, rest: str) -> bool:
