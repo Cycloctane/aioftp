@@ -745,7 +745,7 @@ class Server:
         self.encoding = encoding
         self.ssl = ssl
         if ssl_explicit and not self.ssl:
-            raise ValueError("\"ssl\" parameter must be set to enable explicit FTPS")
+            raise ValueError('"ssl" parameter must be set to enable explicit FTPS')
         self.ssl_explicit = ssl_explicit
         self.welcome_message = welcome_message
         self.system_type = system_type
