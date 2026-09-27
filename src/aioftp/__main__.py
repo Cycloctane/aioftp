@@ -81,7 +81,7 @@ print(f"aioftp v{aioftp.__version__}")
 
 if not args.quiet:
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG,
         format="%(asctime)s [%(name)s] %(message)s",
         datefmt="[%H:%M:%S]:",
     )
@@ -95,6 +95,7 @@ else:
         user = aioftp.User(args.login, args.password)
     path_io_factory = aioftp.PathIO
 
+ssl_context: ssl.SSLContext | None = None
 if args.ftps != "off":
     if not all((args.keyfile, args.certfile)):
         raise ValueError("certfile and keyfile is required for FTPS")
@@ -102,8 +103,6 @@ if args.ftps != "off":
     ssl_context.load_cert_chain(args.certfile, args.keyfile)
 elif any((args.keyfile, args.certfile)):
     raise ValueError("--certfile and --keyfile args require --ftps to be set")
-else:
-    ssl_context = None
 
 family = {
     "ipv4": socket.AF_INET,
