@@ -135,16 +135,31 @@ async def test_ftpes_passive_connection(pair_factory, Server, server_ssl, client
 
 
 @pytest.mark.asyncio
-async def test_ftpes_starttls_failed_after_login(
-    pair_factory,
-    Server,
-    server_ssl,
-    client_ssl,
-    expect_codes_in_exception,
-):
+async def test_authtls_fail_after_login(pair_factory, Server, server_ssl, client_ssl, expect_codes_in_exception):
     async with pair_factory(server=Server(ssl=server_ssl, ssl_explicit=True), logged=True) as pair:
         with expect_codes_in_exception("503"):
             await pair.client.upgrade_to_tls(client_ssl)
+
+
+@pytest.mark.asyncio
+async def test_authtls_not_supported(pair_factory, client_ssl, expect_codes_in_exception):
+    async with pair_factory(logged=False) as pair:
+        with expect_codes_in_exception("502"):
+            await pair.client.upgrade_to_tls(client_ssl)
+
+
+@pytest.mark.asyncio
+async def test_authtls_type_not_supported(pair_factory, Server, server_ssl, expect_codes_in_exception):
+    async with pair_factory(server=Server(ssl=server_ssl, ssl_explicit=True), logged=False) as pair:
+        with expect_codes_in_exception("504"):
+            await pair.client.command("AUTH foo", "234")
+
+
+@pytest.mark.asyncio
+async def test_ssl_parameter(pair_factory, Server):
+    with pytest.raises(ValueError):
+        async with pair_factory(server=Server(ssl=None, ssl_explicit=True)):
+            pass
 
 
 @pytest.mark.asyncio
