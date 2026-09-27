@@ -755,9 +755,7 @@ class Server:
             "MLST type;size;create;modify;",
         ]
         if self.ssl:
-            self.features.extend(("PROT", "PBSZ"))
-        if self.ssl_explicit:
-            self.features.append("AUTH TLS")
+            self.features.extend(("AUTH TLS;", "PROT", "PBSZ"))
 
         self.commands_mapping: dict[
             str,
@@ -1143,7 +1141,7 @@ class Server:
         return True
 
     async def auth(self, connection: Connection, rest: str) -> bool:
-        if not self.ssl or not self.ssl_explicit:
+        if not self.ssl:
             connection.response("502", "'AUTH' not implemented")
         elif connection.future.ssl_enabled.done():
             connection.response("503", "already using TLS")
