@@ -56,7 +56,7 @@ async def test_feat_command_ftps(pair_factory, Server, Client, server_ssl, clien
     async with pair_factory(server=Server(ssl=server_ssl), client=Client(ssl=client_ssl)) as pair:
         code, info = await pair.client.command("feat", "211")
     content = {item.strip() for item in info} ^ {"-features supported:", "end"}
-    assert content == {"AUTH TLS;", "PROT", "PBSZ", "EPSV", "MLST type;size;create;modify;"}
+    assert content == {"AUTH TLS", "PROT", "PBSZ", "EPSV", "MLST type;size;create;modify;"}
 
 
 @pytest.mark.asyncio
