@@ -755,7 +755,7 @@ class Server:
             "MLST type;size;create;modify;",
         ]
         if self.ssl:
-            self.features.extend(("AUTH TLS;", "PROT", "PBSZ"))
+            self.features.extend(("AUTH TLS", "PROT", "PBSZ"))
 
         self.commands_mapping: dict[
             str,
@@ -1150,8 +1150,8 @@ class Server:
         elif rest.upper() not in ("TLS", "SSL"):
             connection.response("504", f"AUTH {rest!r} not implemented")
         else:
-            connection.response("234", f"AUTH {rest!r} successful")
             connection.ssl_enabled = True
+            await self.write_response(connection.command_connection, "234", "ready for TLS")
             await connection.command_connection.start_tls(self.ssl)
         return True
 
